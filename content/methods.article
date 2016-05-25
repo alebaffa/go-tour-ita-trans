@@ -6,33 +6,133 @@ http://golang.org
 
 * Metodi
 
-Go non ha classi. Ad ogni modo, puoi definire metodi sui tipi struttura.
+Go non ha classi.
+Ad ogni modo, puoi definire metodi sui tipi struttura.
+
+Un metodo è una funzione con uno speciale argomento _ricettore_.
 
 Il _ricettore_del_metodo_ appare nella propria lista di argomenti tra la parola chiave `func` e il nome del metodo.
 
+In questo esempio, il metodo `Abs` ha un ricettore di tipo `Vertex` chiamato `v`.
+
 .play methods/methods.go
+
+* Metodi sono funzioni
+
+Ricorda: un metodo è semplicemente una funzione con un argomento ricettore.
+
+Qui trovate `Abs` scritto sottoforma di regolare funzione senza cambiamenti nella sua funzionalità.
+
+.play methods/methods-funcs.go
 
 * Metodi continua
 
-Puoi dichiarare un metodo su _qualsiasi_ tipo che è dichiarato nel tuo _package_, non solo tipi struct.
+Puoi dichiarare un metodo anche su tipi che non sono strutture.
 
-Ad ogni modo, non puoi definire un metodo su un tipo da un altro _package_ (inclusi i tipi _built-in_).
+In questo esempio vediamo un tipo numerico `MyFloat` con un metodo `Abs`.
+
+Puoi dichiarare un metodo con un ricettore il cui tipo è dichiarato nello stesso
+package del metodo.
+Non puoi dichiarare un metodo con un ricettore il cui tipo è definito in un altro
+package (il che include anche tipi nativi come `int`).
 
 .play methods/methods-continued.go
 
-* Metodi con puntatori ricettori
+* Ricettori puntatori
 
-I metodi possono essere associati a tipi oppure a puntatori a tipi.
+Puoi dichiarare metodi con ricettori puntatori.
 
-Abbiamo appena visto due metodi `Abs`. Uno sul puntatore al tipo `*Vertex` e l'altro sul valore di tipo `MyFloat`.
+Questo significa che il tipo del ricettore ha una sintassi `*T` per tipi `T`.
+(In aggiunta, `T` stesso non può essere un puntatore come `*int`.)
 
-Ci sono due ragioni per usare un puntatore ricettore. Primo, per evitare di copiare il valore ad ogni chiamata al metodo (più efficiente se il tipo valore è una struct molto grande). Secondo, per fare in modo che il metodo modifichi il valore al quale il ricettore sta puntando.
+Per esempio, il metodo `Scale` qui è definito sul tipo `*Vertex`.
 
-Prova a cambiare la dichiarazione dei metodi `Abs` e `Scale` in modo da usare `Vertex` come ricettore, invece di `*Vertex`.
+Metodi con ricettori puntatori possono modificare il valore al quale puntano (come `Scale` sta facendo qui).
+Dato che i metodi spesso necessitano di modificare i loro ricettori, i puntatori sono
+molto più comuni che ricettori passati come valore.
 
-Il metodo `Scale` non ha effetto quando `v` è un `Vertex`. `Scale` muta `v`. Quando `v` è un tipo valore (non puntatore), il metodo vede la copia di `Vertex` e non può mutare il valore originale.
+Prova a rimuovere il `*` dalla dichiarazione della funzione `Scale` nella linea 16
+e guarda come il programma cambia il suo comportamento.
 
-`Abs` funziona alla stessa maniera. Riesce solo a leggere `v`. Non importa se sta leggendo il valore originale (attraverso un puntatore) o una copia di quel valore.
+Con un ricettore di tipo valore, il metodo `Scale` opera su una copia del valore originale `Vertex`.
+(Questo è lo stesso comportamento di un qualsiasi altro argomento in una funzione.)
+Il metodo `Scale` deve avere un ricettore puntatore per cambiare il valore di `Vertex` dichiarato nella funzione `main`.
+
+.play methods/methods-pointers.go
+
+* Puntatori e funzioni
+
+Qui vediamo i metodi `Abs` e `Scale` riscritti come funzioni.
+
+Ancora, prova a rimuovere il carattere `*` in linea 16.
+Vedi il cambiamento?
+Cos'altro hai bisogno di cambiare per compilare questo esempio?
+
+(Se non sei sicuro, vai alla prossima pagina.)
+
+.play methods/methods-pointers-explained.go
+
+* Metodi e puntatori indiretti
+
+Paragonando i due programmi precedenti, puoi notare che le funzioni
+con un argomento puntatore devono usare un puntatore:
+
+	var v Vertex
+	ScaleFunc(v)  // Compile error!
+	ScaleFunc(&v) // OK
+
+mentre metodi con ricettori puntatori possono usare sia una valore che un puntatore
+quando sono chiamati:
+
+	var v Vertex
+	v.Scale(5)  // OK
+	p := &v
+	p.Scale(10) // OK
+
+Per l'espressione `v.Scale(5)`, anche se `v` è un valore e non un puntatore,
+il metodo con il ricettore puntatore è chiamato automaticamente.
+In altre parole, per convenienza, Go interpreta l'espressione `v.Scale(5)` come
+`(&v).Scale(5)` in quanto il metodo `Scale` ha un ricettore puntatore.
+
+.play methods/indirection.go
+
+* Metodi e puntatori indiretti (2)
+
+L'equivalente accade nella direzione inversa.
+
+Funzioni che ricevono un argomento valore devono prendere un valore di quello specifico tipo:
+
+	var v Vertex
+	fmt.Println(AbsFunc(v))  // OK
+	fmt.Println(AbsFunc(&v)) // Compile error!
+
+mentre metodi con ricettori valore possono prendere sia un valore che un puntatore
+come ricettore quando sono chiamati:
+
+	var v Vertex
+	fmt.Println(v.Abs()) // OK
+	p := &v
+	fmt.Println(p.Abs()) // OK
+
+In questo caso, la chiamata al metodo `p.Abs()` è interpretata come `(*p).Abs()`.
+
+.play methods/indirection-values.go
+
+* Scegliere tra ricettore valore o puntatore
+
+Ci sono due ragioni per scegliere un ricettore puntatore.
+
+Il primo è che il metodo può così modificare il valore al quale il puntatore sta puntando.
+
+Il secondo è per evitare di copiare il valore per ogni chiamata al metodo.
+Questo può essere più efficiente se il ricettore è una struttura di grandi dimensioni, per esempio.
+
+In questo esempio, sia `Scale` che `Abs` hanno un ricettore di tipo `*Vertex`
+anche se il metodo `Abs` non necessita di modificare il ricettore.
+
+In generale, tutti i metodi su un determinato tipo dovrebbero un ricettore puntatore o valore,
+ma non un mix di entrambi.
+(Vedremo perchè nelle prossime pagine.)
 
 .play methods/methods-with-pointer-receivers.go
 
@@ -61,6 +161,106 @@ Questo incoraggia anche la definizione precisa di interfacce, perchè si deve tr
 [[http://golang.org/pkg/io/][_package_ io]] definisce `Reader` e `Writer`; non devi ridefinirle.
 
 .play methods/interfaces-are-satisfied-implicitly.go
+
+* Interfacce valore
+
+Dietro le quinte, i valori interfaccia possono essere visti come tuple di un
+valore e un tipo concreto:
+
+	(value, type)
+
+Un'interfaccia valore contiene il valore di un sottostante tipo specifico.
+
+Chiamare un metodo su un'interfaccia valore esegue il metodo con lo stesso nome
+nel suo tipo sottostante.
+
+.play methods/interface-values.go
+
+* Interfacce valore con sottostanti valori nil
+
+Se il valore nell'interfaccia stessa è nil,
+il metodo verrà chiamato con un ricettore nil.
+
+In alcuni linguaggi questo provocherebbe un _null pointer exception_,
+ma in Go è comune scrivere metodi che gestiscono elegantemente ricettori nil (come il metodo `M` in questo esempio.)
+
+Nota che un valore interfaccia che contiene un valore nil è esso stesso non nil.
+
+.play methods/interface-values-with-nil.go
+
+* Interfacce nulle
+
+Un valore interfaccia nil non contiene ne un valore e ne un tipo concreto.
+
+Chiamare un metodo su un'interfaccia nulla è un errore run-time perchè non c'è
+un tipo all'interno della tupla dell'interfaccia che indica quale metodo _concreto_ chiamare.
+
+.play methods/nil-interface-values.go
+
+* Interfacce vuote
+
+Il tipo interfaccia che non specifica alcun metodo è conosciuto come _interfaccia vuota_:
+
+	interface{}
+
+Un'interfaccia vuota può contenere valori di qualsiasi tipo.
+(Ogni tipo implementa almeno nessun metodo.)
+
+Interfacce vuote sono usate da programmi che gestiscono valori di tipi indefiniti.
+Per esempio, `fmt.Print` prende un numero qualsiasi di argomenti di tipo `interface{}`.
+
+.play methods/empty-interface.go
+
+* Dichiarazione di tipi
+
+Una _dichiarazione di tipo_ da accesso al valore sottostante concreto di un valore interfaccia.
+
+ 	t := i.(T)
+
+Questa espressione afferma che il valore interfaccia `i` contiene il tipo concreto `T`
+e assegna il sottostante valore `T` alla variabile `t`.
+
+Se `i` non contiene un tipo `T`, l'espressione genererà un errore fatale.
+
+Per _testare_ se un valore interfaccia contiene un tipo specifico,
+una dichiarazione di tipo può ritornare due valori: il valore sottostante
+e un valore booleano che riporta se la dichiarazione ha avuto successo.
+
+	t, ok := i.(T)
+
+Se `i` contiene un tipo `T`, allora `t` sarà il valore sottostante e `ok` sarà vero.
+
+Altrimenti, `ok` sarà falso e `t` sarà il valore zero del tipo `T`,
+e nessun errore fatale sarà generato.
+
+Nota la somiglianza tra questa sintassi e quella della lettura da una mappa.
+
+.play methods/type-assertions.go
+
+* Switch su tipi
+
+Uno _switch su tipo_ è un costrutto che permette diversi tipi di asserzioni in serie.
+
+Uno switch su tipo è come una normale espressione swtich, ma i casi in un tipo switch specificano tipi (non valori),
+e questi valori sono comparati contro il tipo dell'interfaccia data.
+
+	switch v := i.(type) {
+	case T:
+		// here v has type T
+	case S:
+		// here v has type S
+	default:
+		// no match; here v has the same type as i
+	}
+
+La dichiarazione di un tipo switch ha la stessa sintassi di una dichiarazione di tipo `i.(T)`,
+ma lo specifico tipo `T` è sostituito con la keyword `type`.
+
+Questa espressione switch controlla se il valore interfaccia `i` contiene un valore di tipo `T` o `S`.
+In entrambi i casi `T` o `S`, la variabile `v` sarà rispettivamente di tipo `T` o `S` e conterrà il valore contenuto da `i`.
+Nel caso di default (quando nessuno dei casi è valido), la variabile `v` è dello stesso tipo e valore di `i`.
+
+.play methods/type-switches.go
 
 * Stringer
 
@@ -165,49 +365,6 @@ Il tipo `rot13Reader` è già fornito per te.
 Trasformalo in un `io.Reader` implementandone il metodo `Read`.
 
 .play methods/exercise-rot-reader.go
-
-* Web server
-
-Il [[http://golang.org/pkg/net/http/][_package_ http]] serve richieste HTTP usando qualsiasi valore che implementa `http.Handler`:
-
-	package http
-
-	type Handler interface {
-		ServeHTTP(w ResponseWriter, r *Request)
-	}
-
-In questo esempio, il tipo `Hello` implementa `http.Handler`.
-
-Visita [[http://localhost:4000/][http://localhost:4000/]] per vedere l'annuncio.
-
-#appengine: *Nota:* Questo esempio non verrà eseguito se si sta usando l'interfaccia Web del tour.
-#appengine: Per provare a scrivere un web server potresti voler
-#appengine: [[http://golang.org/doc/install/][installare Go]].
-
-.play methods/web-servers.go
-
-* Esercizio: gestore HTTP
-
-Implementa i seguenti tipi e definisci in loro il metodo ServeHTTP. Configurali in modo che possano gestire percorsi specifici nel tuo web server.
-
-	type String string
-
-	type Struct struct {
-		Greeting string
-		Punct    string
-		Who      string
-	}
-
-Per esempio, dovresti essere in grado di configurare i gestori usando
-
-	http.Handle("/string", String("I'm a frayed knot."))
-	http.Handle("/struct", &Struct{"Hello", ":", "Gophers!"})
-
-#appengine: *Nota:* Questo esempio non verrà eseguito se si sta usando l'interfaccia Web del tour.
-#appengine: Per provare a scrivere un web server potresti voler
-#appengine: [[http://golang.org/doc/install/][installare Go]].
-
-.play methods/exercise-http-handlers.go
 
 * Immagini
 

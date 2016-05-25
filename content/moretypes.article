@@ -37,7 +37,7 @@ Una `struct` è una collezione di campi.
 
 .play moretypes/structs.go
 
-* Campi di Struttura
+* Campi in una struttura
 
 I campi della struttura sono accessibili usando il punto
 
@@ -47,7 +47,10 @@ I campi della struttura sono accessibili usando il punto
 
 I campi di una struttura sono accessibili attraverso un puntatore alla struttura.
 
-La deferenziazione attraverso il puntatore è trasparente.
+Per accedere al campo `X` di una struttura quando abbiamo un puntatore ad essa `p` potremmo
+usare `(*p).X`.
+Comunque, questa notazione è scomoda, per cui il linguaggio ci permette di scrivere
+più semplicemente `p.X`, senza una deferenziazione esplicita.
 
 .play moretypes/struct-pointers.go
 
@@ -79,55 +82,116 @@ Go offre un modo conveniente di lavorare con gli array.
 
 * Slice
 
-Una slice punta verso un array di valori e include anche una lunghezza.
-
+Un array ha una lunghezza fissata.
+Una slice, d'altro canto, è una vista flessibile,
+a lunghezza dinamica degli elementi di un array.
+Nella pratica, le slice sono molto più comuni degli array.
 
 `[]T` è una slice con elementi di tipo `T`.
 
+Questa espressione crea una slice dei primi cinque elementi dell'array `a`:
+
+	a[0:5]
+
 .play moretypes/slices.go
 
-* Ridimensionare le slice
+* Slice sono come referenze ad array
 
-Slice possono essere ridimensionate, creando un nuovo valore slice che punta allo stesso array.
+Una slice non memorizza nessun dato,
+ma descrive soltanto una sezione di un array a lui sottostante.
 
-L'espressione
+Cambiare gli elementi di una slice modifica i corrispondenti elementi
+dell'array sottostante.
 
-	s[lo:hi]
+Altre slice che condividono lo stesso array sottostante vedranno i cambiamenti.
 
-recupera gli elementi della slice da `lo` a `hi-1`, incluso. Quindi
+.play moretypes/slices-pointers.go
 
-	s[lo:lo]
+* Slice letterali
 
-è vuoto e
+Una slice letterale è come un array letterale, ma senza lunghezza.
 
-	s[lo:lo+1]
+Questo è un array letterale:
 
-ha un solo elemento.
+	[3]bool{true, true, false}
 
-.play moretypes/slicing-slices.go
+E questo crea lo stesso array come sopra,
+e poi crea una slice che lo referenzia:
 
-* Creare slice
+[]bool{true, true, false}
 
-Le slice sono create usando la funzione `make`. Funziona allocando un array di zeri e ritornando una slice che si riferisce a quell'array:
+.play moretypes/slice-literals.go
 
-	a := make([]int, 5)  // len(a)=5
+* Slice default
 
-Per specificare una capacità, basta passare un terzo argomento a `make`:
+Quando si creano slice, si possono omettere i limiti inferiori e superiori e usare quelli di default.
 
-	b := make([]int, 0, 5) // len(b)=0, cap(b)=5
+Per il limite inferiore il default è zero, mentre per quello superiore è la lunghezza della slice.
 
-	b = b[:cap(b)] // len(b)=5, cap(b)=5
-	b = b[1:]      // len(b)=4, cap(b)=4
+Per l'array:
 
-.play moretypes/making-slices.go
+	var a [10]int
+
+queste slice sono equivalenti:
+
+a[0:10]
+a[:10]
+a[0:]
+a[:]
+
+.play moretypes/slice-bounds.go
+
+* Lunghezza e capacità di una slice
+
+Una slice ha sia una _lunghezza_ che una _capacità_.
+
+La lunghezza di una slice è il numero di elementi che essa contiene.
+
+La capacità di una slice è il numero di elementi nell'array sottostante,
+contando dal primo elemento nella slice.
+
+La lunghezza e la capacità di una slice `s` possono essere ottenute con le espressioni
+`len(s)` and `cap(s)`.
+
+Puoi estendere la lunghezza di una slice facendo una _re-slice_ di essa,
+a condizione che ci sia sufficiente capacità.
+Prova a cambiare una delle seguenti operazioni sulla slide nel programma di esempio
+per estenderla più della sua capacità e guarda cosa succede.
+
+.play moretypes/slice-len-cap.go
 
 * Slice nulle
 
 Il valore zero di una slice è `nil`.
 
-Una slice _nil_ ha una lunghezza e capacità di 0.
+Una slice _nil_ ha una lunghezza e capacità di 0 e non ha un array sottostante.
 
 .play moretypes/nil-slices.go
+
+* Creare una slice con make
+
+Le slice possono essere create con la funzione `make`;
+questo è il modo di creare array a lunghezza dinamica.
+
+La funzione `make` alloca un array inizializzato a zero e
+ritorna una slice che referenzia quell'array:
+
+	a := make([]int, 5)  // len(a)=5
+
+Per specificare una capacità, passa un terzo argomento alla funzione `make`:
+
+b := make([]int, 0, 5) // len(b)=0, cap(b)=5
+
+b = b[:cap(b)] // len(b)=5, cap(b)=5
+b = b[1:]      // len(b)=4, cap(b)=4
+
+.play moretypes/making-slices.go
+
+* Slice di slice
+
+Una slice può contenere qualsiasi tipo, incluso altre slice.
+
+.play moretypes/slices-of-slice.go
 
 * Aggiungere elementi a una slice
 

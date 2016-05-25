@@ -181,7 +181,7 @@ nel suo tipo sottostante.
 Se il valore nell'interfaccia stessa è nil,
 il metodo verrà chiamato con un ricettore nil.
 
-In alcuni linguaggi questo provocherebbe un _null pointer exception_,
+In alcuni linguaggi questo provocherebbe un _null_ _pointer_ _exception_,
 ma in Go è comune scrivere metodi che gestiscono elegantemente ricettori nil (come il metodo `M` in questo esempio.)
 
 Nota che un valore interfaccia che contiene un valore nil è esso stesso non nil.

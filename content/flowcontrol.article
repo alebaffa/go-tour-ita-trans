@@ -1,0 +1,132 @@
+Istruzioni condizionali: for, if, else, e switch
+Impara come controllare il flusso del tuo codice tramite istruzioni condizionali, cicli, e switch.
+
+Gli Autori di Go
+http://golang.org
+
+* For
+
+Go ha solo un costrutto ciclico, il ciclo `for`.
+
+Il `for` di base assomiglia a quello di C o Java, con la differenza che le parentesi `(`)` non ci sono (non sono neanche opzionali) e che le parentesi `{`}` sono obbligatorie.
+
+.play flowcontrol/for.go
+
+* For continua
+
+Come in C o Java, puoi lasciare le istruzioni pre e post vuote.
+
+.play flowcontrol/for-continued.go
+
+* For è il "while" di Go
+
+A quel punto puoi rimuovere i punti e virgola: `while` in C è scritto `for` in Go.
+
+.play flowcontrol/for-is-gos-while.go
+
+* Infinito
+
+Se tralasci le condizioni del ciclo, si entrerà in un ciclo infinito, che quindi è espresso in modo molto compatto.
+
+.play flowcontrol/forever.go
+
+* If
+
+La condizione `if` assomiglia a quella di C o Java, con la differenza che le parentesi `(`)` non ci sono (non sono neanche opzionali) e che le parentesi `{`}` sono obbligatorie.
+
+(Suona familiare?)
+
+.play flowcontrol/if.go
+
+* If con un'istruzione corta
+
+Come `for`, la condizione `if` può cominciare con una piccola istruzione da eseguire prima della condizione.
+
+Variabili dichiarate nell'istruzione rimangono nello scope solo fino alla fine dell'`if`
+
+(Prova a usare `v` nell'ultima istruzione `return`.)
+
+.play flowcontrol/if-with-a-short-statement.go
+
+* If e else
+
+Variabili dichiarate dentro una condizione `if` corta sono disponibili anche all'interno dei suoi blocchi `else`.
+
+.play flowcontrol/if-and-else.go
+
+* Esercizio: Cicli e Funzioni
+
+Una maniera semplice di giocare con funzioni e cicli è di implementare la funzione di radice quadrata usando il metodo di Newton.
+
+In questo caso, il metodo di Newton consiste nell'approssimare `Sqrt(x)` scegliendo un punto di partenza _z_ e poi ripetendo:
+
+.image /content/img/newton.png
+
+Per cominciare, è sufficiente ripetere questo calcolo 10 volte e vedere quanto vicino arrivi alla risposta per valori differenti (1, 2, 3, ...).
+
+Successivamente, cambia la condizione del ciclo in modo da fermarsi non appena il valore non cambia più (oppure cambia solo di piccolissimi delta). Vedi se ci sono piú o meno interazioni. Quanto vicino sei a [[http://golang.org/pkg/math/#Sqrt][math.Sqrt]]?
+
+Indizio: per dichiarare e inizializzare un valore floating point (virgola mobile), usa la sintassi a virgola mobile oppure usa una conversione:
+
+	z := float64(1)
+	z := 1.0
+
+.play flowcontrol/exercise-loops-and-functions.go
+
+* Switch
+
+Probabilmente sapevi già a cosa avrebbe assomigliato `switch`.
+
+Un case si interrompe automaticamente, a meno che esso non termini con una dichiarazione `fallthrough`.
+
+.play flowcontrol/switch.go
+
+* Ordine di valutazione dello switch
+
+Switch valuta casi dall'alto verso il basso, fermandosi quando un caso ha successo.
+
+(Per esempio,
+
+	switch i {
+	case 0:
+	case f():
+	}
+
+non chiama `f` se `i==0`.)
+
+#appengine: *Nota:* Il tempo nel Go Playground sembra sempre cominciare il
+#appengine: 2009-11-10 23:00:00 UTC, un valore il cui significato è lasciato
+#appengine: come esercizio al lettore.
+
+.play flowcontrol/switch-evaluation-order.go
+
+* Switch senza condizioni
+
+Switch senza condizioni è uguale a `switch`true`.
+
+Questo costrutto può essere un modo pulito di scrivere catene di _if-then-else_ molto lunghe.
+
+.play flowcontrol/switch-with-no-condition.go
+
+* Funzioni differite (defer)
+
+Una istruzione di _defer_ postpone l'esecuzione di una funzione fino a che la funzione associata ritorna.
+
+Gli argomenti della chiamata differita sono valutati immediatamente, ma la chiamata alla funzione non viene eseguita fino a che la funzione associata non ritorna.
+
+.play flowcontrol/defer.go
+
+*  Defer sovrapposti
+
+Chiamate di funzioni differite sono inseriti in uno _stack_. Quando una funzione ritorna, le sue chiamate differite sono eseguite nell'ordine _last-in-first-out_ (LIFO) (ultimo entrato è il primo ad uscire)
+
+Per saperne di più circa le istruzioni _defer_ leggi questo
+[[http://blog.golang.org/defer-panic-and-recover][blog post]].
+
+.play flowcontrol/defer-multi.go
+
+* Congratulazioni!
+
+Hai terminato questa lezione!
+
+Puoi tornare alla lista dei [[/list][moduli]] per scoprire cos'altro puoi imparare, o continua con la [[javascript:click('.next-page')][prossima lezione]].

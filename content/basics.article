@@ -1,0 +1,227 @@
+Packages, variabili, e funzioni
+Impara i componenti di base di qualsiasi programma Go.
+
+Gli Autori di Go
+http://golang.org
+
+* Packages
+
+Ogni programma Go è composto di _packages_.
+
+I programmi cominciano l'esecuzione nel _package_ `main`.
+
+Questo programma sta utilizzando i _packages_ tramite percorsi d'importazione `"fmt"` and `"math/rand"`.
+
+Per convenzione, il nome del _package_ è lo stesso dell'ultimo elemento del percorso di importazione. Per esempio, il _package_ `"math/rand"` comprende i file che cominciano con la dichiarazione `package`rand`.
+
+#appengine: *Nota:* l'ambiente in cui questi programmi sono eseguiti è
+#appengine: deterministico, quindi `rand.Intn` ritornerá sempre lo stesso numero.
+#appengine:
+#appengine: (Per vedere numeri diversi, inizializza il generatore di numeri; guarda [[http://golang.org/pkg/math/rand/#Seed][`rand.Seed`]].)
+
+.play basics/packages.go
+
+* Imports
+
+Questo codice raggruppa le importazioni in parentesi, percorsi di importazione "fattorizzati".
+
+Puoi anche scrivere multiple importazioni, come:
+
+	import "fmt"
+	import "math"
+
+Ma è buona norma usare importazioni fattorizzate.
+
+.play basics/imports.go
+
+* Nomi esportati
+
+Dopo aver importato un _package_, puoi anche fare riferimento ai nomi che esso esporta.
+
+In Go, un nome è esportato se comincia con una lettera maiuscola.
+
+`Foo` è un nome esportato, così come `FOO`. Il nome `foo` non è esportato.
+
+Esegui il codice. Poi rinomina `math.pi` in `math.Pi` e riprova.
+
+
+.play basics/exported-names.go
+
+* Funzioni
+
+Una funzione può avere zero o piú argomenti.
+
+In questo esempio, `add` ha due parametri di tipo `int`.
+
+Da notare che il tipo viene _dopo_ il nome della variabile.
+
+
+(Per saperne di piú sul motivo per cui i tipi sono in questo modo, leggi l'[[http://golang.org/doc/articles/gos_declaration_syntax.html][articolo sulla sintassi delle dichiarazioni in Go]].)
+
+.play basics/functions.go
+
+* Funzioni continua
+
+Quando due o piú variabili di una funzione, posizionate consecutivamente, condividono il tipo, si può omettere il tipo su tutte le variabili tranne l'ultima.
+
+In questo esempio, riduciamo
+
+	x int, y int
+
+a
+
+	x, y int
+
+.play basics/functions-continued.go
+
+* Risultati multipli
+
+Una funzione può ritornare un qualsiasi numero di risultati.
+
+La funzione `swap` ritorna due stringhe.
+
+
+.play basics/multiple-results.go
+
+* Valori di ritorno nominati
+
+I valori di ritorno in Go possono essere nominati ed agire come vere e proprie variabili.
+
+Questi nomi dovrebbero essere usati per chiarire il significato dei valori di ritorno.
+
+Un'istruzione `return` senza argomenti ritorna i valori correnti dei risultati. Ció è conosciuto come ritorno "naked" (nudo).
+
+Ritorni "nudi" dovrebbero essere usati solo in piccole funzioni, come l'esempio qui mostrato. Esse possono nuocere alla leggibilitá in funzioni piú lunghe.
+
+.play basics/named-results.go
+
+* Variabili
+
+L'istruzione `var` dichiara una lista di variabili; cosí come per le liste di argomenti di una funzione, il tipo è alla fine.
+
+Un'istruzione `var` può essere a livello di _package_ o di funzione. Vediamo entrambi in questo esempio.
+
+.play basics/variables.go
+
+* Variabili con inizializzazioni
+
+Una dichiarazione var può includere inizializzazioni, uno per variabile.
+
+Se un inizializzatore è presente, il tipo può essere omesso; la variabile prenderá il tipo dell'inizializzazione.
+
+.play basics/variables-with-initializers.go
+
+* Dichiarazione breve di variabile
+
+All'interno di una funzione, l'istruzione breve di assegnamento `:=` può essere usata al posto dell'istruzione `var` con tipo implicito.
+
+Al di fuori di una funzione, ogni istruzione comincia con una parola chiave (`var`, `func`, e cosí via) e quindi il costrutto `:=` non è disponibile.
+
+.play basics/short-variable-declarations.go
+
+* Tipi di base
+
+I tipi di base di Go sono
+
+	bool
+
+	string
+
+	int  int8  int16  int32  int64
+	uint uint8 uint16 uint32 uint64 uintptr
+
+	byte // alias per uint8
+
+	rune // alias per int32
+	     // rappresenta un "code point" Unicode
+
+	float32 float64
+
+	complex64 complex128
+
+L'esempio mostra variabili di differenti tipi,
+e anche che la dichiarazione di variabili può essere "fattorizzata" in blocchi,
+cosí come per le istruzioni di import.
+
+I tipi `int`, `uint`, and `uintptr` sono grandi normalmente 32 bit su sistemi da 32-bit e 64 bit su sistemi da 64-bit.
+Quando hai bisogno di un valore intero dovresti usare `int` a meno che tu non abbia particolari necessità di usare tipi di interi di dimensioni diverse o unsigned.
+
+.play basics/basic-types.go
+
+* I valori zero
+
+Variabili dichiarate senza un valore iniziale esplicito vengono inizializzate con il loro _valore_zero_.
+
+Il valore zero è:
+
+- `0` per tipi numerici,
+- `false` per il tipo booleano, e
+- `""` (stringa vuota) per le stringhe.
+
+.play basics/zero.go
+
+* Conversione di tipi
+
+L'espressione `T(v)` converte il valore `v` nel tipo `T`.
+
+Alcune conversioni numeriche:
+
+	var i int = 42
+	var f float64 = float64(i)
+	var u uint = uint(f)
+
+o piú semplicemente:
+
+	i := 42
+	f := float64(i)
+	u := uint(f)
+
+Diversamente da C, in Go l'assegnamento tra elementi di tipo differente richiede una conversione esplicita.
+Prova a rimuovere le conversioni `float64` o `int` nell'esempio e guarda cosa succede.
+
+.play basics/type-conversions.go
+
+* Inferenza di tipo
+
+Quando si dichiara una variabile senza specificarne il tipo (usando `var` senza un tipo oppure la sintassi `:=` ), il tipo della variabile è _inferito_ dal valore nella parte destra.
+
+Quando la parte destra della dichiarazione è tipizzata, la nuova variabile assume lo stesso tipo:
+
+	var i int
+	j := i // j is an int
+
+Ma quanto la parte destra contiene una costante numerica non tipizzata, la nuova variabile può essere un `int`, `float64`, o `complex128` a seconda della precisione del contesto:
+
+	i := 42           // int
+	f := 3.142        // float64
+	g := 0.867 + 0.5i // complex128
+
+Prova a cambiare il valore iniziale di `v` nel codice di esempio e osserva come il suo tipo viene affetto.
+
+.play basics/type-inference.go
+
+* Costanti
+
+Le costanti sono dichiarate come variabili, ma con la parola chiave `const`.
+
+Le costanti possono essere carattere, stringa, booleano, o valori numerici.
+
+Le costanti non possono essere dichiarate con la sintassi `:=`.
+
+.play basics/constants.go
+
+* Costanti Numeriche
+
+Costanti numeriche sono _valori_ ad alta precisione.
+
+Una costante non tipizzata prende il tipo richiesto dal suo contesto.
+
+Prova anche a stampare a video `needInt(Big)`.
+
+.play basics/numeric-constants.go
+
+* Congratulazioni
+
+Hai terminato questa lezione!
+
+Puoi tornare alla lista dei [[/list][moduli]] per scegliere cosa imparare ora, oppure continua con la [[javascript:click('.next-page')][prossima lezione]].

@@ -1,0 +1,173 @@
+Concorrenza
+Go fornisce strutture per la gestione della concorrenza come parte del core del linguaggio. Queste lezioni le presentano dando esempi di utilizzo.
+
+Gli Autori di Go
+http://golang.org
+
+* Goroutines
+
+Una _goroutine_ è un thread leggero gestito dal runtime di Go.
+
+	go f(x, y, z)
+
+avvia una goroutine eseguendo
+
+	f(x, y, z)
+
+La valutazione di `f`, `x`, `y`, e `z` avviene nella goroutine corrente e l'esecuzione di `f` nella nuova goroutine.
+
+Le goroutine vengono eseguite nello stesso spazio di indirizzamento, per cui l'accesso a risorse condivise deve essere sincronizzato. Il _package_ [[http://golang.org/pkg/sync/][`sync`]] offre utili primitive, sebbene non ne avrai molto bisogno in Go in quanto ci sono altre primitive. (Guarda la _slide_ successiva.)
+
+.play concurrency/goroutines.go
+
+* Canali
+
+I channels (canali) sono condotti tipizzati attraverso il quale puoi inviare e ricevere valori con l'operatore di canale, `<-`.
+
+	ch <- v    // Invia v al canale ch.
+	v := <-ch  // Riceve da ch, e
+	           // assegna il valore a v.
+
+(I dati scorrono nella direzione della freccia.)
+
+Allo stesso modo di mappe e slice, i canali devono essere creati prima del loro utilizzo:
+
+	ch := make(chan int)
+
+Per default, invio e ricezione sono bloccati fino a che l'altra parte è pronta. Questo permette alle goroutines di sincronizzarsi senza _lock_ espliciti o variabili di condizione.
+
+.play concurrency/channels.go
+
+* Canali Bufferizzati
+
+I canali possono essere _bufferizzati_. Fornisci la lunghezza del buffer come secondo argomento in `make` per inizializzare un canale bufferizzato:
+
+	ch := make(chan int, 100)
+
+Invia blocchi in un canale bufferizzato solo quando il buffer è pieno. Riceve blocchi quando il buffer è vuoto.
+
+Modifica l'esempio per riempire il buffer e guarda cosa succede.
+
+.play concurrency/buffered-channels.go
+
+* Range e Close
+
+Il mittente può  `chiudere` (close) un canale per indicare che non verranno più inviati valori. Il destinatario può testare se un canale è stato chiuso assegnando un secondo parametro all'espressione di ricezione:
+
+	v, ok := <-ch
+
+`ok` è `false` se non ci sono più valori da ricevere e il canale è chiuso.
+
+Il ciclo `for`i`:=`range`c` riceve valori dal canale ripetutamente fino a quando è chiuso.
+
+*Nota:* Solo il mittente dovrebbe chiudere il canale, mai il destinatario. L'invio in un canale chiuso provoca un panic error.
+
+*Altra*nota*: I canali non sono come files; non hai bisogno normalmente di chiuderli. La chiusura è necessaria solo quando il destinatario è stato informato che non ci saranno altri valori in arrivo, così che possa terminare il ciclo `range`.
+
+.play concurrency/range-and-close.go
+
+* Select
+
+L'istruzione `select` permette a una goroutine di aspettare su multiple operazioni di comunicazione.
+
+Un `select` si blocca fino uno dei suoi casi può essere eseguito, poi esegue quel caso. Ne sceglie uno a caso nell'eventualità che molteplici casi siano pronti.
+
+.play concurrency/select.go
+
+* Select di default
+
+Il caso di `default` in un `select` è eseguito solo quando nessun altro caso è pronto.
+
+Usa un case `default` per provare a inviare o ricevere senza bloccarsi:
+
+	select {
+	case i := <-c:
+		// usa i
+	default:
+		// ricevere da c provocherebbe un blocco
+	}
+
+.play concurrency/default-selection.go
+
+* Eserizio: Albero Binario Equivalente
+
+Possono esserci molti alberi binari con la stessa sequenza di valori nelle foglie. Per esempio, qui ci sono due alberi binari che contengono la sequenza 1, 1, 2, 3, 5, 8, 13.
+
+.image /content/img/tree.png
+
+Una funzione per controllare se due alberi binari contengono la stessa sequenza è abbastanza complessa nella maggior parte dei linguaggi. Useremo la concorrenza e i canali di Go per scrivere una semplice soluzione.
+
+Questo esempio usa il _package_ `tree`, che definisce il tipo:
+
+	type Tree struct {
+		Left  *Tree
+		Value int
+		Right *Tree
+	}
+
+* Esercizio: Albero Binario Equivalente
+
+Descrizione continua in [[javascript:click('.next-page')][pagina successiva]].
+
+*1.* Implementa la funzione `Walk`.
+
+*2.* Testa la funzione `Walk`.
+
+La funzione `tree.New(k)`costruisce un albero binario strutturato in modo casuale che contiene i valori `k`, `2k`, `3k`, ..., `10k`.
+
+Crea un nuovo canale `ch` e avvia il walker:
+
+	go Walk(tree.New(1), ch)
+
+Poi leggi e stampa 10 valori dal canale. Dovrebbero essere i valori 1, 2, 3, ..., 10.
+
+*3.* Implementa la funzione `Same` usando `Walk` per determinare se `t1` e `t2` contengono gli stessi valori.
+
+*4.* Testa la funzione `Same`.
+
+`Same(tree.New(1),`tree.New(1))` dovrebbero ritornare _true_, e `Same(tree.New(1),`tree.New(2))` dovrebbe ritornare _false_.
+
+.play concurrency/exercise-equivalent-binary-trees.go
+
+* Esercizio: Web Crawler
+
+In questo esercizio userai le caratteristiche di concorrenza di Go per parallelizzare un web crawler.
+
+Modifica la funzione `Crawl` function to recuperare dei URL in parallelo senza recuperare lo stesso URL due volte.
+
+.play concurrency/exercise-web-crawler.go
+
+* Dove andare da qui...
+
+#appengine: Puoi cominciare a
+#appengine: [[http://golang.org/doc/install/][installare Go]] o scaricare la
+#appengine: [[http://code.google.com/appengine/downloads.html#Google_App_Engine_SDK_for_Go][Go App Engine SDK]].
+
+#appengine: Una volta che hai installato Go, la [[http://golang.org/doc/][Documentazione Ufficiale di Go]] è un ottimo posto per
+#appengine: continuare.
+Contiene referenze, tutorial, video, e molto altro.
+
+Per imparare come organizzare e lavorare con il codice Go, guarda [[http://www.youtube.com/watch?v=XCsL89YtqCs][questo screencast]] o leggi [[http://golang.org/doc/code.html][How to Write Go Code]].
+
+Se hai bisogno di aiuto con la libreria standard, guarda il [[http://golang.org/pkg/][_package_ reference]]. Per un aiuto con il linguaggio stesso, ti potrebbe sorprendere di sapere che la [[http://golang.org/ref/spec][Language Spec]] è abbastanza leggibile.
+
+Per esplorare ulteriormente il modello di concorrenza di Go, guarda
+[[http://www.youtube.com/watch?v=f6kdp27TYZs][Go Concurrency Patterns]]
+([[http://talks.golang.org/2012/concurrency.slide][slides]])
+e
+[[https://www.youtube.com/watch?v=QDDwwePbDtw][Advanced Go Concurrency Patterns]]
+([[http://talks.golang.org/2013/advconc.slide][slides]])
+e leggi
+[[http://golang.org/doc/codewalk/sharemem/][Share Memory by Communicating]].
+
+Per cominciare a scrivere applicazioni web, guarda
+[[http://vimeo.com/53221558][A simple programming environment]]
+([[http://talks.golang.org/2012/simple.slide][slides]])
+e leggi il tutorial
+[[http://golang.org/doc/articles/wiki/][Writing Web Applications]].
+
+Il codewalk [[http://golang.org/doc/codewalk/functions/][First Class Functions in Go]] da un'interessante prospettiva sui tipi di funzione di Go.
+
+Il [[http://blog.golang.org/][Go Blog]] ha un grande archivio di informazioni e articoli su Go.
+
+Visita [[http://golang.org][golang.org]] per altro ancora.

@@ -91,7 +91,7 @@ Usa un case `default` per provare a inviare o ricevere senza bloccarsi:
 
 .play concurrency/default-selection.go
 
-* Eserizio: Albero Binario Equivalente
+* Esercizio: Albero Binario Equivalente
 
 Possono esserci molti alberi binari con la stessa sequenza di valori nelle foglie. Per esempio, qui ci sono due alberi binari che contengono la sequenza 1, 1, 2, 3, 5, 8, 13.
 

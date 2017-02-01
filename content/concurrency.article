@@ -22,7 +22,7 @@ Le goroutine vengono eseguite nello stesso spazio di indirizzamento, per cui l'a
 
 * Canali
 
-I channels (canali) sono condotti tipizzati attraverso il quale puoi inviare e ricevere valori con l'operatore di canale, `<-`.
+I canali (channels) sono condotti tipizzati attraverso il quale puoi inviare e ricevere valori con l'operatore di canale, `<-`.
 
 	ch <- v    // Invia v al canale ch.
 	v := <-ch  // Riceve da ch, e
@@ -35,6 +35,8 @@ Allo stesso modo di mappe e slice, i canali devono essere creati prima del loro 
 	ch := make(chan int)
 
 Per default, invio e ricezione sono bloccati fino a che l'altra parte è pronta. Questo permette alle goroutines di sincronizzarsi senza _lock_ espliciti o variabili di condizione.
+
+Il codice di esempio esegue la somma dei numeri in una slice, distribuendo il lavoro tra due goroutine. Una volta che entrambe hanno completato il loro lavoro, la funzione calcola il risultato finale.
 
 .play concurrency/channels.go
 
@@ -105,9 +107,9 @@ Questo esempio usa il _package_ `tree`, che definisce il tipo:
 		Right *Tree
 	}
 
-* Esercizio: Albero Binario Equivalente
-
 Descrizione continua in [[javascript:click('.next-page')][pagina successiva]].
+
+* Esercizio: Albero Binario Equivalente
 
 *1.* Implementa la funzione `Walk`.
 
@@ -127,7 +129,28 @@ Poi leggi e stampa 10 valori dal canale. Dovrebbero essere i valori 1, 2, 3, ...
 
 `Same(tree.New(1),`tree.New(1))` dovrebbero ritornare _true_, e `Same(tree.New(1),`tree.New(2))` dovrebbe ritornare _false_.
 
+La documentazione di `Tree` puoi trovarla [[https://godoc.org/golang.org/x/tour/tree#Tree][qui]].
+
 .play concurrency/exercise-equivalent-binary-trees.go
+
+* sync.Mutex
+
+Abbiamo visto come i canali sono ottimi per la comunicazione tra goroutines.
+
+Ma se non avessimo bisogno di comunicazione? Se avessimo solo bisogno di accertarci che solo una goroutine per volta può accedere a una variabile senza conflitti?
+
+Questo concetto si chiama _mutua_ _esclusione_, e il nome della struttura che offre questa proprietà è _mutex_.
+
+La libreria standard di Go fornisce mutua esclusione con _sync.Mutex_ e i suoi due metodi:
+
+	Lock
+	Unlock
+
+Possiamo definire una parte di codice da eseguire in mutua esclusione semplicemente circondandola con una chiamata a `Lock` e `Unlock` come mostrato nel metodo `Inc`.
+
+Possiamo anche usare `defer` per assicurarci che il mutex verrá sbloccato, come mostrato nel metodo `Value`.
+
+.play concurrency/mutex-counter.go
 
 * Esercizio: Web Crawler
 
@@ -135,21 +158,21 @@ In questo esercizio userai le caratteristiche di concorrenza di Go per paralleli
 
 Modifica la funzione `Crawl` function to recuperare dei URL in parallelo senza recuperare lo stesso URL due volte.
 
+_Indizio_: potete tenere una copia cache del URL recuperato dalla mappa, ma le mappe usate da sole non sono sicure in termini di concorrenza!
+
 .play concurrency/exercise-web-crawler.go
 
 * Dove andare da qui...
 
 #appengine: Puoi cominciare a
-#appengine: [[http://golang.org/doc/install/][installare Go]] o scaricare la
-#appengine: [[http://code.google.com/appengine/downloads.html#Google_App_Engine_SDK_for_Go][Go App Engine SDK]].
+#appengine: [[http://golang.org/doc/install/][installare Go]].
 
 #appengine: Una volta che hai installato Go, la [[http://golang.org/doc/][Documentazione Ufficiale di Go]] è un ottimo posto per
-#appengine: continuare.
-Contiene referenze, tutorial, video, e molto altro.
+#appengine: continuare. Contiene referenze, tutorial, video, e molto altro.
 
 Per imparare come organizzare e lavorare con il codice Go, guarda [[http://www.youtube.com/watch?v=XCsL89YtqCs][questo screencast]] o leggi [[http://golang.org/doc/code.html][How to Write Go Code]].
 
-Se hai bisogno di aiuto con la libreria standard, guarda il [[http://golang.org/pkg/][_package_ reference]]. Per un aiuto con il linguaggio stesso, ti potrebbe sorprendere di sapere che la [[http://golang.org/ref/spec][Language Spec]] è abbastanza leggibile.
+Se hai bisogno di aiuto con la libreria standard, guarda il [[http://golang.org/pkg/][_package_ reference]]. Per un aiuto con il linguaggio stesso, ti potrebbe sorprendere di sapere che la [[http://golang.org/ref/spec][Language Spec]] è molto facile da comprendere.
 
 Per esplorare ulteriormente il modello di concorrenza di Go, guarda
 [[http://www.youtube.com/watch?v=f6kdp27TYZs][Go Concurrency Patterns]]
@@ -170,4 +193,4 @@ Il codewalk [[http://golang.org/doc/codewalk/functions/][First Class Functions i
 
 Il [[http://blog.golang.org/][Go Blog]] ha un grande archivio di informazioni e articoli su Go.
 
-Visita [[http://golang.org][golang.org]] per altro ancora.
+Visita [[http://golang.org][golang.org]] per molto altro.

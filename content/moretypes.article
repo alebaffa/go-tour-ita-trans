@@ -118,7 +118,7 @@ Questo è un array letterale:
 E questo crea lo stesso array come sopra,
 e poi crea una slice che lo referenzia:
 
-[]bool{true, true, false}
+	[]bool{true, true, false}
 
 .play moretypes/slice-literals.go
 
@@ -134,10 +134,10 @@ Per l'array:
 
 queste slice sono equivalenti:
 
-a[0:10]
-a[:10]
-a[0:]
-a[:]
+	a[0:10]
+	a[:10]
+	a[0:]
+	a[:]
 
 .play moretypes/slice-bounds.go
 
@@ -180,10 +180,10 @@ ritorna una slice che referenzia quell'array:
 
 Per specificare una capacità, passa un terzo argomento alla funzione `make`:
 
-b := make([]int, 0, 5) // len(b)=0, cap(b)=5
+	b := make([]int, 0, 5) // len(b)=0, cap(b)=5
 
-b = b[:cap(b)] // len(b)=5, cap(b)=5
-b = b[1:]      // len(b)=4, cap(b)=4
+	b = b[:cap(b)] // len(b)=5, cap(b)=5
+	b = b[1:]      // len(b)=4, cap(b)=4
 
 .play moretypes/making-slices.go
 
@@ -214,6 +214,8 @@ Se l'array di supporto `s` è troppo piccolo per contenere tutti i valori da agg
 
 La forma `range` del ciclo `for` itera su una slice o mappa.
 
+Quando si itera su una slice, due valori sono ritornati ad ogni iterazione. Il primo é l'indice, e il secondo é la copia dell'elemento posizionato a quell'indice.
+
 .play moretypes/range.go
 
 * Range continua
@@ -238,9 +240,11 @@ La scelta dell'immagine è libera. Funzioni interessanti includono `(x+y)/2`, `x
 
 * Mappe
 
-Una mappa collega chiavi e valori.
+Una mappa collega chiavi a valori.
 
-Le mappe devono essere create con `make` (no `new`) prima di essere usate; la mappa `nil` è vuota e non puà essere assegnata.
+Il valore di default di una mappa é `nil`. Una mappa `nil` non ha chiavi e non posso neanche essere aggiunte.
+
+La funzione `make` ritorna una mappa di un determinato tipo, inizializzato e pronto per l'uso.
 
 .play moretypes/maps.go
 
@@ -293,9 +297,11 @@ Potresti trovare interessante [[http://golang.org/pkg/strings/#Fields][strings.F
 
 .play moretypes/exercise-maps.go
 
-* Valori di funzione
+* Funzioni anonime
 
-Le funzioni sono anche valori.
+Le funzioni sono anche valori. Esse possono essere passate da una funzione all'altra come altri valori.
+
+Funzioni anonime possono anche essere usate come argomenti in una funzione e ritornare valori.
 
 .play moretypes/function-values.go
 

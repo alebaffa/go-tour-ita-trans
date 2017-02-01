@@ -8,7 +8,17 @@ http://golang.org
 
 Go ha solo un costrutto ciclico, il ciclo `for`.
 
-Il `for` di base assomiglia a quello di C o Java, con la differenza che le parentesi `(`)` non ci sono (non sono neanche opzionali) e che le parentesi `{`}` sono obbligatorie.
+Il `for` ha tre componenti separati da punto e virgola:
+
+- l'inizializzazione: eseguita una volta sola prima del ciclo
+- la condizione (booleana): valutata all'inizio di ogni ripetizione del ciclo
+- l'incremento/decremento: eseguito alla fine di ogni ripetizione del ciclo 
+
+L'inizializzazione è spesso fatta con una dichiarazione breve di variabile, e le variabili create in questo componente del ciclo sono visibili solo all'interno del ciclo `for`.
+
+Il ciclo si fermerá solo quando la condizione booleana sará valutata `falsa`.
+
+`Nota`: diversamente da altri linguaggi come C, Java, o Javascript i tre componenti del costrutto ciclico non sono tra parentesi `(`)` e le parentesi `{`}` sono obbligatorie.
 
 .play flowcontrol/for.go
 
@@ -32,9 +42,7 @@ Se tralasci le condizioni del ciclo, si entrerà in un ciclo infinito, che quind
 
 * If
 
-La condizione `if` assomiglia a quella di C o Java, con la differenza che le parentesi `(`)` non ci sono (non sono neanche opzionali) e che le parentesi `{`}` sono obbligatorie.
-
-(Suona familiare?)
+La condizione `if` è come il ciclo `for`; non ci sono le parentesi `(`)`, ma le parentesi `{`}` sono obbligatorie.
 
 .play flowcontrol/if.go
 
@@ -51,6 +59,8 @@ Variabili dichiarate nell'istruzione rimangono nello scope solo fino alla fine d
 * If e else
 
 Variabili dichiarate dentro una condizione `if` corta sono disponibili anche all'interno dei suoi blocchi `else`.
+
+(Entrambe le chiamate a `pow` sono eseguite e ritornate prima che la chiamata a `fmt.Println` nel `main` cominci) 
 
 .play flowcontrol/if-and-else.go
 
@@ -110,15 +120,15 @@ Questo costrutto può essere un modo pulito di scrivere catene di _if-then-else_
 
 * Funzioni differite (defer)
 
-Una istruzione di _defer_ postpone l'esecuzione di una funzione fino a che la funzione associata ritorna.
+Una istruzione di _defer_ postpone l'esecuzione di una funzione fino a che la funzione al suo fianco ritorna.
 
-Gli argomenti della chiamata differita sono valutati immediatamente, ma la chiamata alla funzione non viene eseguita fino a che la funzione associata non ritorna.
+Gli argomenti della chiamata differita sono valutati immediatamente, ma la chiamata alla funzione non viene eseguita fino a che la funzione al suo fianco non ritorna.
 
 .play flowcontrol/defer.go
 
 *  Defer sovrapposti
 
-Chiamate di funzioni differite sono inseriti in uno _stack_. Quando una funzione ritorna, le sue chiamate differite sono eseguite nell'ordine _last-in-first-out_ (LIFO) (ultimo entrato è il primo ad uscire)
+Chiamate di funzioni differite sono inseriti in una _pila_. Quando una funzione ritorna, le sue chiamate differite sono eseguite nell'ordine _last-in-first-out_ (LIFO) (ultimo entrato è il primo ad uscire)
 
 Per saperne di più circa le istruzioni _defer_ leggi questo
 [[http://blog.golang.org/defer-panic-and-recover][blog post]].

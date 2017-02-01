@@ -6,8 +6,7 @@ http://golang.org
 
 * Metodi
 
-Go non ha classi.
-Ad ogni modo, puoi definire metodi sui tipi struttura.
+Go non ha classi. Ad ogni modo, puoi definire dei metodi sui tipi struttura.
 
 Un metodo è una funzione con uno speciale argomento _ricettore_.
 
@@ -150,13 +149,10 @@ il metodo `Abs` è definito solo su `*Vertex` (il tipo puntatore).
 
 * Interfacce sono soddisfatte implicitamente
 
-Un tipo implementa un'interfaccia implementandone i metodi.
+Un tipo implementa un'interfaccia implementandone i metodi. Non c'è una dichiarazione esplicita; no parole chiavi "implements"
 
-Non c'è una dichiarazione esplicita; no parole chiavi "implements"
+Interfacce implicite scollegano la definizione di un'interfaccia dalla sua implementazione, che potrebbe quindi essere presente in qualsiasi package senza accordo preventivo.
 
-Interfacce implicite scollegano i _packages_ dell'implementazione dai _packages_ che definiscono le interfacce: l'uno non dipende dall'altro.
-
-Questo incoraggia anche la definizione precisa di interfacce, perchè si deve trovare ogni implementazione e taggarla con il nome della nuova interfaccia.
 
 [[http://golang.org/pkg/io/][_package_ io]] definisce `Reader` e `Writer`; non devi ridefinirle.
 

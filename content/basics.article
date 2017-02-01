@@ -10,9 +10,9 @@ Ogni programma Go è composto di _packages_.
 
 I programmi cominciano l'esecuzione nel _package_ `main`.
 
-Questo programma sta utilizzando i _packages_ tramite percorsi d'importazione `"fmt"` and `"math/rand"`.
+Questo programma sta utilizzando i _packages_ tramite percorsi di import `"fmt"` and `"math/rand"`.
 
-Per convenzione, il nome del _package_ è lo stesso dell'ultimo elemento del percorso di importazione. Per esempio, il _package_ `"math/rand"` comprende i file che cominciano con la dichiarazione `package`rand`.
+Per convenzione, il nome del _package_ è lo stesso dell'ultimo elemento nel percorso di import delle dipendenze. Per esempio, il _package_ `"math/rand"` comprende i file che cominciano con la dichiarazione `package`rand`.
 
 #appengine: *Nota:* l'ambiente in cui questi programmi sono eseguiti è
 #appengine: deterministico, quindi `rand.Intn` ritornerá sempre lo stesso numero.
@@ -23,26 +23,28 @@ Per convenzione, il nome del _package_ è lo stesso dell'ultimo elemento del per
 
 * Imports
 
-Questo codice raggruppa le importazioni in parentesi, percorsi di importazione "fattorizzati".
+Questo codice raggruppa gli import delle dipendenze in parentesi.
 
-Puoi anche scrivere multiple importazioni, come:
+Puoi anche importare multiple dipendenze cosí:
 
 	import "fmt"
 	import "math"
 
-Ma è buona norma usare importazioni fattorizzate.
+Ma è buona norma usare le parentesi per dipendenze multiple.
 
 .play basics/imports.go
 
-* Nomi esportati
+* Nomi pubblici
 
-Dopo aver importato un _package_, puoi anche fare riferimento ai nomi che esso esporta.
+In Go, un nome è pubblico (esportato) se comincia con una lettera maiuscola. Per esempio, `Pizza` é un nome pubblico, cosí come `Pi`, che é reso pubblico nel package `math`.
 
-In Go, un nome è esportato se comincia con una lettera maiuscola.
+`pizza` e `pi` non cominciano con la lettera maiuscola, quindi non sono pubblici.
 
-`Foo` è un nome esportato, così come `FOO`. Il nome `foo` non è esportato.
+Quando importi un package puoi utilizzare solo i suoi nomi pubblici (siano essi variabili o funzioni). Nomi non pubblici non sono accessibili dall'esterno del loro package.
 
-Esegui il codice. Poi rinomina `math.pi` in `math.Pi` e riprova.
+Esegui il codice. Nota il messaggio di errore.
+
+Per risolverlo, rinomina `math.pi` in `math.Pi` e riprova.
 
 
 .play basics/exported-names.go
@@ -91,7 +93,7 @@ Questi nomi dovrebbero essere usati per chiarire il significato dei valori di ri
 
 Un'istruzione `return` senza argomenti ritorna i valori correnti dei risultati. Ció è conosciuto come ritorno "naked" (nudo).
 
-Ritorni "nudi" dovrebbero essere usati solo in piccole funzioni, come l'esempio qui mostrato. Esse possono nuocere alla leggibilitá in funzioni piú lunghe.
+Variabili ritornate "naked" dovrebbero essere usati solo in piccole funzioni, come l'esempio qui mostrato. Esse possono nuocere alla leggibilitá in funzioni piú lunghe.
 
 .play basics/named-results.go
 
@@ -105,13 +107,13 @@ Un'istruzione `var` può essere a livello di _package_ o di funzione. Vediamo en
 
 * Variabili con inizializzazioni
 
-Una dichiarazione var può includere inizializzazioni, uno per variabile.
+Una dichiarazione var permette di inizializzare le variabili, una alla volta.
 
-Se un inizializzatore è presente, il tipo può essere omesso; la variabile prenderá il tipo dell'inizializzazione.
+Se una variabile é inizializzata, il tipo può essere omesso; la variabile assumerá il tipo corretto.
 
 .play basics/variables-with-initializers.go
 
-* Dichiarazione breve di variabile
+* Dichiarazione di variabile breve
 
 All'interno di una funzione, l'istruzione breve di assegnamento `:=` può essere usata al posto dell'istruzione `var` con tipo implicito.
 
@@ -217,6 +219,8 @@ Costanti numeriche sono _valori_ ad alta precisione.
 Una costante non tipizzata prende il tipo richiesto dal suo contesto.
 
 Prova anche a stampare a video `needInt(Big)`.
+
+(Un `int` puó contenere al massimo un intero da 64-bit, e a volte meno.)
 
 .play basics/numeric-constants.go
 

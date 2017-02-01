@@ -50,6 +50,7 @@ Il tour è disponibile in altre lingue:
 - [[http://go-tour-de.appspot.com/][German — Deutsch]]
 - [[http://go-tour-es.appspot.com/][Spanish — Español]]
 - [[http://go-tour-fr.appspot.com/][French — Français]]
+- [[https://go-tour-id2.appspot.com/][Indonesia - Bahasa]]
 - [[http://go-tour-ita.appspot.com/][Italian — Italiano]]
 - [[http://go-tour-he.appspot.com/][Hebrew — עִבְרִית]]
 - [[http://go-tour-jp.appspot.com/][Japanese — 日本語]]
@@ -58,26 +59,49 @@ Il tour è disponibile in altre lingue:
 - [[http://tour.go-zh.org/][Simplified Chinese — 中文（简体）]]
 - [[http://go-tour-zh-tw.appspot.com/][Traditional Chinese — 中文（繁體）]]
 - [[http://go-tour-ua.appspot.com/][Ukrainian — Українська]]
+- [[https://go-tour-uz.appspot.com/][Uzbek — Ўзбекча]]
+- [[https://go-tour-turkish.appspot.com/][Turkish - Türkçe]]
 
 Clicca il pulsante [[javascript:highlightAndClick(".next-page")]["successivo"]] o usa `PageDown` per continuare.
+
+* Go offline
+
+Questo tour é anche disponibile come programma che gira in locale sul tuo computer senza bisogno di accedere ad Internet.
+
+Rispetto la versione online esso é piú veloce, in quanto esegue i programmi di esempio sul tuo computer.
+
+Per avviare il tour locale prima devi [[http://golang.org/dl/][scaricare e installare Go]] e successivamente lanciare il seguente comando da terminale:
+
+    go tool tour
+
+Il tour verrá lanciato automaticamente in una pagina web nel tuo browser predefinito.
+
+Oppure puoi continuare il tour qui su questo sito.
 
 #appengine: * The Go Playground
 #appengine:
 #appengine: Questo tour si basa sul [[http://play.golang.org/][Go Playground]], un
 #appengine: web service che gira sui server di [[http://golang.org/][golang.org]].
 #appengine:
+#appengine:
 #appengine: Il servizio riceve un programma Go, lo compila, fa il _linking_ ed esegue il programma in una
 #appengine: _sandbox_, poi ritorna il risultato.
 #appengine:
+#appengine:
 #appengine: Ci sono limitazioni sui programmi che possono essere eseguiti nel playground:
+#appengine:
 #appengine: 
 #appengine: - Nel playground il tempo inizia il 2009-11-10 23:00:00 UTC (determinare il significato di questa data è un esercizio per il lettore). Questo semplifica le operazioni di _caching_ dei programmi dando loro dei risultati deterministici.
 #appengine:
+#appengine:
 #appengine: - Ci sono limitazioni anche sul tempo di esecuzione e l'utilizzo di CPU e memoria, e il programma non può accedere a reti esterne.
+#appengine:
 #appengine:
 #appengine: Il _playground_ usa l'ultima versione stabile di Go.
 #appengine:
+#appengine:
 #appengine: Leggi "[[http://blog.golang.org/playground][Inside the Go Playground]]" per saperne di piú.
+#appengine:
 #appengine:
 #appengine: .play welcome/sandbox.go
 
